@@ -1,33 +1,39 @@
 #include <iostream>
-#include <numeric>
-#include <unordered_set>
 #include <vector>
 
 using namespace std;
 
-int solution(vector<int> elements) {
-  int answer = 0;
-  int n = elements.size();
-  vector<int> extended_elements = elements;
-  extended_elements.insert(extended_elements.end(), elements.begin(),
-                           elements.end());
-  unordered_set<int> unique_sum;
+vector<vector<int>> solution(vector<vector<int>> arr1,
+                             vector<vector<int>> arr2) {
+  vector<vector<int>> answer(arr1.size(), vector<int>(arr2[0].size(), 0));
 
-  for (int len = 1; len <= n; len++) {
-    for (int i = 0; i < n; i++) {
-      int current_sum = accumulate(extended_elements.begin() + i,
-                                   extended_elements.begin() + i + len, 0);
-      unique_sum.insert(current_sum);
+  for (int i = 0; i < arr1.size(); i++) {
+    for (int j = 0; j < arr2[0].size(); j++) {
+      for (int k = 0; k < arr1[0].size(); k++) {
+        answer[i][j] += arr1[i][k] * arr2[k][j];
+      }
     }
   }
-  answer = unique_sum.size();
   return answer;
 }
 
+template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
+  os << "{ ";
+  for (size_t i = 0; i < vec.size(); i++) {
+    os << vec[i];
+    if (i != vec.size() - 1) {
+      os << ", ";
+    }
+  }
+  os << " }";
+  return os;
+}
+
 int main() {
-  vector<int> elements = {7, 9, 1, 1, 4};
-  int expected = 18;
-  int result = solution(elements);
+  vector<vector<int>> arr1 = {{1, 4}, {3, 2}, {4, 1}};
+  vector<vector<int>> arr2 = {{3, 3}, {3, 3}};
+  vector<vector<int>> expected = {{15, 15}, {15, 15}, {15, 15}};
+  vector<vector<int>> result = solution(arr1, arr2);
 
   if (result == expected) {
     cout << "result: " << result << endl;
