@@ -18,6 +18,7 @@
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
           gnumake
+          cmake
           nodejs_latest
           go
           lua
