@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemastore.org/package.json",
+  "private": true,
+  "name": "cotest",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "seolman",
+  "license": "MIT",
+  "type": "module"
+}
