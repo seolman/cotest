@@ -1,19 +1,11 @@
 #include <iostream>
+#include <string>
 #include <vector>
 
 using namespace std;
 
-vector<vector<int>> solution(vector<vector<int>> arr1,
-                             vector<vector<int>> arr2) {
-  vector<vector<int>> answer(arr1.size(), vector<int>(arr2[0].size(), 0));
-
-  for (int i = 0; i < arr1.size(); i++) {
-    for (int j = 0; j < arr2[0].size(); j++) {
-      for (int k = 0; k < arr1[0].size(); k++) {
-        answer[i][j] += arr1[i][k] * arr2[k][j];
-      }
-    }
-  }
+int solution(vector<vector<string>> clothes) {
+  int answer = 0;
   return answer;
 }
 
@@ -29,16 +21,34 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
+void pick(int n, vector<int>& picked, int to_pick) {
+  if (to_pick == 0) {
+    cout << picked << endl;
+    return;
+  }
+  int smallest = picked.empty() ? 0 : picked.back() + 1;
+  for (int next = smallest; next < n; next++) {
+    picked.push_back(next);
+    pick(n, picked, to_pick - 1);
+    picked.pop_back();
+  }
+}
+
 int main() {
-  vector<vector<int>> arr1 = {{1, 4}, {3, 2}, {4, 1}};
-  vector<vector<int>> arr2 = {{3, 3}, {3, 3}};
-  vector<vector<int>> expected = {{15, 15}, {15, 15}, {15, 15}};
-  vector<vector<int>> result = solution(arr1, arr2);
+  vector<vector<string>> clothes = {{"yellow_hat", "headgear"},
+                                    {"blue_sunglasses", "eyewear"},
+                                    {"green_turban", "headgear"}};
+  int expected = 5;
+  int result = solution(clothes);
 
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
     cout << "expected: " << expected << ", " << "result: " << result << endl;
   }
+
+  vector<int> arr = {};
+  int n = 7;
+  pick(n, arr, 4);
   return 0;
 }
