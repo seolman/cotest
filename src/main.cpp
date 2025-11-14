@@ -1,12 +1,22 @@
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 using namespace std;
 
 int solution(vector<vector<string>> clothes) {
-  int answer = 0;
-  return answer;
+  unordered_map<string, int> clothes_map;
+  for (const auto &cloth_pair : clothes) {
+    clothes_map[cloth_pair[1]]++;
+  }
+  int answer = 1;
+  for (const auto &pair : clothes_map) {
+    // 안 입은 경우를 포함
+    answer *= (pair.second + 1);
+  }
+  // 아무 것도 안입은 경우 -1
+  return answer - 1;
 }
 
 template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
@@ -19,19 +29,6 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   }
   os << " }";
   return os;
-}
-
-void pick(int n, vector<int>& picked, int to_pick) {
-  if (to_pick == 0) {
-    cout << picked << endl;
-    return;
-  }
-  int smallest = picked.empty() ? 0 : picked.back() + 1;
-  for (int next = smallest; next < n; next++) {
-    picked.push_back(next);
-    pick(n, picked, to_pick - 1);
-    picked.pop_back();
-  }
 }
 
 int main() {
@@ -47,8 +44,16 @@ int main() {
     cout << "expected: " << expected << ", " << "result: " << result << endl;
   }
 
-  vector<int> arr = {};
-  int n = 7;
-  pick(n, arr, 4);
+  clothes = {{"crow_mask", "face"},
+             {"blue_sunglasses", "face"},
+             {"smoky_makeup", "face"}};
+  expected = 3;
+  result = solution(clothes);
+
+  if (result == expected) {
+    cout << "result: " << result << endl;
+  } else {
+    cout << "expected: " << expected << ", " << "result: " << result << endl;
+  }
   return 0;
 }

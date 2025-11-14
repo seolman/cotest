@@ -3,9 +3,11 @@
   "private": true,
   "name": "cotest",
   "version": "0.1.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {},
+  "main": "src/index.js",
+  "scripts": {
+    "start:js": "",
+    "start:ts": ""
+  },
   "author": "seolman",
   "license": "MIT",
   "type": "module"

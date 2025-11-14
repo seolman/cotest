@@ -1,0 +1,9 @@
+{
+  "$schema": "https://schemastore.org/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "target": "esnext",
+    "rootDir": "src",
+    "outDir": "dist"
+  }
+}
