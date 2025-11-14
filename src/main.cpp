@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <string>
 #include <vector>
 
 using namespace std;
@@ -16,36 +17,42 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-int solution(int k, vector<vector<int>> dungeons) {
-  int answer = -1;
-  // next_permutation()은 오름차순 정렬이 되야함?
-  sort(dungeons.begin(), dungeons.end());
-  do {
-    int current_k = k;
-    int count = 0;
-    cout << dungeons << endl;
-    for (const auto &dungeon : dungeons) {
-      int required = dungeon[0];
-      int use = dungeon[1];
-      cout << "current k: " << current_k << ", " << "required: " << required << endl;
-      if (current_k >= required) {
-        current_k -= use;
-        count++;
-      } else {
-        break;
-      }
+bool solution(vector<string> phone_book) {
+  bool answer = true;
+  sort(phone_book.begin(), phone_book.end());
+  for (int i = 0; i < phone_book.size() - 1; i++) {
+    if (phone_book[i + 1].find(phone_book[i], 0) == 0) {
+      answer = false;
+      break;
     }
-
-    answer = max(count, answer);
-  } while (next_permutation(dungeons.begin(), dungeons.end()));
+  }
   return answer;
 }
 
 int main() {
-  int k = 80;
-  vector<vector<int>> dungeons = {{80, 20}, {50, 40}, {30, 10}};
-  int expected = 3;
-  int result = solution(k, dungeons);
+  vector<string> phone_book = {"119", "97674223", "1195524421"};
+  bool expected = false;
+  bool result = solution(phone_book);
+
+  if (result == expected) {
+    cout << "result: " << result << endl;
+  } else {
+    cout << "expected: " << expected << ", " << "result: " << result << endl;
+  }
+
+  phone_book = {"123", "456", "789"};
+  expected = true;
+  result = solution(phone_book);
+
+  if (result == expected) {
+    cout << "result: " << result << endl;
+  } else {
+    cout << "expected: " << expected << ", " << "result: " << result << endl;
+  }
+
+  phone_book = {"12", "123", "1235", "567", "88"};
+  expected = false;
+  result = solution(phone_book);
 
   if (result == expected) {
     cout << "result: " << result << endl;
