@@ -1,7 +1,5 @@
-#include <cwchar>
 #include <iostream>
 #include <queue>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -19,60 +17,79 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-bool can_change(const string &begin, const string &target) {
-  int diff_count = 0;
-  for (int i = 0; i < begin.length(); i++) {
-    if (begin[i] != target[i]) {
-      diff_count++;
-    }
-  }
-  return diff_count == 1;
-}
-
-int solution(string begin, string target, vector<string> words) {
-  bool target_exist = false;
-  for (const auto &w : words) {
-    if (w == target) {
-      target_exist = true;
-      break;;
-    }
-  }
-  if (!target_exist) {
-    return 0;
-  }
-
-  queue<pair<string, int>> q;
-  unordered_set<string> visited;
-
-  q.push({begin, 0});
-  visited.insert(begin);
-
-  while (!q.empty()) {
-    string current_string = q.front().first;
-    int current_step = q.front().second;
-    q.pop();
-
-    if (current_string == target) {
-      return current_step;
-    }
-
-    for (const string &w : words) {
-      if (visited.find(w) == visited.end() && can_change(current_string, w)) {
-        visited.insert(w);
-        q.push({w, current_step + 1});
+int solution(vector<vector<int>> rectangle, int characterX, int characterY,
+             int itemX, int itemY) {
+  vector<vector<int>> board(102, vector<int>(102, 0));
+  for (const auto &rect : rectangle) {
+    int x1 = rect[0] * 2;
+    int y1 = rect[1] * 2;
+    int x2 = rect[2] * 2;
+    int y2 = rect[3] * 2;
+    for (int i = y1; i <= y2; i++) {
+      for (int j = x1; j <= x2; j++) {
+        if (board[i][j] == 1) {
+          continue;
+        }
+        if (i == y1 || i == y2 || j == x1 || j == x2) {
+          board[i][j] = 2;
+        } else {
+          board[i][j] = 1;
+        }
       }
     }
   }
 
-  return 0;
-}
+  queue<pair<int, int>> q;
+  vector<vector<int>> dist(102, vector<int>(102, 1));
+  q.push({characterY * 2, characterX * 2});
 
+  int dr[] = {-1, 1, 0, 0};
+  int dc[] = {0, 0, -1, 1};
+
+  while (!q.empty()) {
+    auto [r, c] = q.front();
+    q.pop();
+
+    if (r == itemY * 2 && c == itemX * 2) {
+      return dist[r][c] / 2;
+    }
+
+    for (int i = 0; i < 4; i++) {
+      int next_r = r + dr[i];
+      int next_c = c + dc[i];
+
+      if (next_r >= 0 && next_r < 102 && next_c >= 0 && next_c < 102 &&
+          dist[next_r][next_c] == 1 && board[next_r][next_c] == 2) {
+        dist[next_r][next_c] += dist[r][c];
+        q.push({next_r, next_c});
+      }
+    }
+  }
+
+  return -1;
+}
 int main() {
-  string begin = "hit";
-  string target = "cog";
-  vector<string> words = {"hot", "dot", "dog", "lot", "log", "cog"};
-  int expected = 4;
-  int result = solution(begin, target, words);
+  vector<vector<int>> rectangle = {
+      {1, 1, 7, 4}, {3, 2, 5, 5}, {4, 3, 6, 9}, {2, 6, 8, 8}};
+  int characterX = 1;
+  int characterY = 3;
+  int itemX = 7;
+  int itemY = 8;
+  int expected = 17;
+  int result = solution(rectangle, characterX, characterY, itemX, itemY);
+  if (result == expected) {
+    cout << "result: " << result << endl;
+  } else {
+    cout << "expected: " << expected << ", " << "result: " << result << endl;
+  }
+
+  rectangle = {{1, 1, 8, 4}, {2, 2, 4, 9}, {3, 6, 9, 8}, {6, 3, 7, 7}};
+  characterX = 9;
+  characterY = 7;
+  itemX = 6;
+  itemY = 1;
+  expected = 11;
+  result = solution(rectangle, characterX, characterY, itemX, itemY);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
