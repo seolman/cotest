@@ -1,7 +1,6 @@
 #include <iostream>
-#include <queue>
-#include <utility>
 #include <vector>
+#include <unordered_map>
 
 using namespace std;
 
@@ -17,52 +16,30 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-int solution(vector<int> priorities, int location) {
+int solution(vector<int> topping) {
   int answer = 0;
-  queue<pair<int, int>> q;
-  priority_queue<int> pq;
-  for (int i = 0; i < priorities.size(); i++) {
-    q.push({priorities[i], i});
-    pq.push(priorities[i]);
+  unordered_map<int, int> left_map;
+  unordered_map<int, int> right_map;
+  for (int t : topping) {
+    right_map[t]++;
   }
-
-  while (!q.empty()) {
-    int current_priority = q.front().first;
-    int current_location = q.front().second;
-    q.pop();
-
-    if (current_priority < pq.top()) {
-      q.push({current_priority, current_location});
-    } else {
+  for (int t : topping) {
+    left_map[t]++;
+    right_map[t]--;
+    if (right_map[t] == 0) {
+      right_map.erase(t);
+    }
+    if (left_map.size() == right_map.size()) {
       answer++;
-      pq.pop();
-
-      if (current_location == location) {
-        return answer;
-      }
     }
   }
-
   return answer;
 }
 
 int main() {
-  vector<int> priorities = {2, 1, 3, 2};
-  auto location = 2;
-  auto expected = 1;
-  auto result = solution(priorities, location);
-
-  if (result == expected) {
-    cout << "result: " << result << endl;
-  } else {
-    cout << "expected: " << expected << ", " << "result: " << result << endl;
-  }
-
-  priorities = {1, 1, 9, 1, 1, 1};
-  location = 0;
-  expected = 5;
-  result = solution(priorities, location);
-
+  vector<int> topping = {1, 2, 1, 3, 1, 4, 1, 2};
+  int expected = 2;
+  int result = solution(topping);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
