@@ -1,6 +1,7 @@
 #include <iostream>
+#include <queue>
+#include <tuple>
 #include <vector>
-#include <unordered_map>
 
 using namespace std;
 
@@ -16,30 +17,48 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-int solution(vector<int> topping) {
-  int answer = 0;
-  unordered_map<int, int> left_map;
-  unordered_map<int, int> right_map;
-  for (int t : topping) {
-    right_map[t]++;
-  }
-  for (int t : topping) {
-    left_map[t]++;
-    right_map[t]--;
-    if (right_map[t] == 0) {
-      right_map.erase(t);
+int solution(vector<vector<int>> maps) {
+  int n = maps.size();
+  int m = maps[0].size();
+  vector<vector<bool>> visited(n, vector<bool>(m, false));
+  queue<tuple<int, int, int>> q;
+
+  int dr[] = {-1, 1, 0, 0};
+  int dc[] = {0, 0, -1, 1};
+  q.push({0, 0, 1});
+  visited[0][0] = true;
+
+  while (!q.empty()) {
+    auto [r, c, dist] = q.front();
+    q.pop();
+
+    if (r == n - 1 && c == m - 1) {
+      return dist;
     }
-    if (left_map.size() == right_map.size()) {
-      answer++;
+
+    for (int i = 0; i < 4; i++) {
+      int next_r = r + dr[i];
+      int next_c = c + dc[i];
+
+      if (next_r >= 0 && next_r < n && next_c >= 0 && next_c < m &&
+          maps[next_r][next_c] == 1 && !visited[next_r][next_c]) {
+        visited[next_r][next_c] = true;
+        q.push({next_r, next_c, dist + 1});
+      }
     }
   }
-  return answer;
+
+  return -1;
 }
 
 int main() {
-  vector<int> topping = {1, 2, 1, 3, 1, 4, 1, 2};
-  int expected = 2;
-  int result = solution(topping);
+  vector<vector<int>> maps = {{1, 0, 1, 1, 1},
+                              {1, 0, 1, 0, 1},
+                              {1, 0, 1, 1, 1},
+                              {1, 1, 1, 0, 1},
+                              {0, 0, 0, 0, 1}};
+  int expected = 11;
+  int result = solution(maps);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
