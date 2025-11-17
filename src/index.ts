@@ -1,26 +1,28 @@
-function dfs(numbers: number[], target: number, idx: number, sum: number): number {
-  if (numbers.length === idx) {
-    if (target === sum) {
-      return 1;
-    } else {
-      return 0;
+function dfs(n: number, computers: number[][], idx: number, visited: boolean[]) {
+  visited[idx] = true;
+  for (let i = 0; i < n; i++) {
+    if (computers[idx][i] === 1 && !visited[i]) {
+      dfs(n, computers, i, visited);
     }
   }
-
-  const add_path = dfs(numbers, target, idx + 1, sum + numbers[idx]);
-  const sub_path = dfs(numbers, target, idx + 1, sum - numbers[idx]);
-  return add_path + sub_path;
 }
 
-function solution(numbers: number[], target: number) {
-  const answer = dfs(numbers, target, 0, 0);
+function solution(n: number, computers: number[][]) {
+  let answer = 0;
+  const visited = Array.from({ length: n }, () => false);
+  for (let i = 0; i < n; i++) {
+    if (!visited[i]) {
+      answer++;
+      dfs(n, computers, i, visited);
+    }
+  }
   return answer;
 }
 
-const numbers = [1, 1, 1, 1, 1];
-const target = 3;
-const expected = 5;
-const result = solution(numbers, target);
+const n = 3;
+const computers = [[1, 1, 0], [1, 1, 0], [0, 0, 1]];
+const expected = 2;
+const result = solution(n, computers);
 
 if (expected === result) {
   console.log("result: ", result);

@@ -15,40 +15,43 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-int dfs(const vector<int> &numbers, int target, int idx, int sum) {
-  if (idx == numbers.size()) {
-    if (target == sum) {
-      return 1;
-    } else {
-      return 0;
+void dfs(int n, vector<vector<int>> &computers, int idx,
+         vector<bool> &visited) {
+  visited[idx] = true;
+  for (int i = 0; i < n; i++) {
+    if (computers[idx][i] == 1 && !visited[i]) {
+      dfs(n, computers, i, visited);
     }
   }
-
-  int add_path = dfs(numbers, target, idx + 1, sum + numbers[idx]);
-  int sub_path = dfs(numbers, target, idx + 1, sum - numbers[idx]);
-  return add_path + sub_path;
 }
 
-int solution(vector<int> numbers, int target) {
-  int answer = dfs(numbers, target, 0, 0);
+int solution(int n, vector<vector<int>> computers) {
+  int answer = 0;
+  vector<bool> visited(n, false);
+  for (int i = 0; i < n; i++) {
+    if (!visited[i]) {
+      answer++;
+      dfs(n, computers, i, visited);
+    }
+  }
   return answer;
 }
 
 int main() {
-  vector<int> numbers = {1, 1, 1, 1, 1};
-  int target = 3;
-  int expected = 5;
-  int result = solution(numbers, target);
+  int n = 3;
+  vector<vector<int>> computers = {{1, 1, 0}, {1, 1, 0}, {0, 0, 1}};
+  int expected = 2;
+  int result = solution(n, computers);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
     cout << "expected: " << expected << ", " << "result: " << result << endl;
   }
 
-  numbers = {4, 1, 2, 1};
-  target = 4;
-  expected = 2;
-  result = solution(numbers, target);
+  n = 3;
+  computers = {{1, 1, 0}, {1, 1, 1}, {0, 1, 1}};
+  expected = 1;
+  result = solution(n, computers);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
