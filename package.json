@@ -5,10 +5,13 @@
   "version": "0.1.0",
   "main": "src/index.js",
   "scripts": {
-    "start:js": "",
-    "start:ts": ""
+    "js": "node .",
+    "ts": "tsc && node dist/index.js"
   },
   "author": "seolman",
   "license": "MIT",
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
 }

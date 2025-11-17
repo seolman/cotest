@@ -21,3 +21,9 @@ const numbers = [1, 1, 1, 1, 1];
 const target = 3;
 const expected = 5;
 const result = solution(numbers, target);
+
+if (expected === result) {
+  console.log("result: ", result);
+} else {
+  console.log("result: ", result, "expected: ", expected);
+}
