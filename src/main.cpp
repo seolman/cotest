@@ -1,5 +1,5 @@
-#include <deque>
 #include <iostream>
+#include <stack>
 #include <vector>
 
 using namespace std;
@@ -16,58 +16,32 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-int solution(int bridge_length, int weight, vector<int> truck_weights) {
-  int answer = 0;
-  int total_weight = 0;
-  deque<int> trucks(truck_weights.begin(), truck_weights.end());
-  deque<int> bridge(bridge_length, 0);
+vector<int> solution(vector<int> prices) {
+  vector<int> answer(prices.size());
+  stack<int> s;
+  for (int i = 0; i < prices.size(); i++) {
+    while (!s.empty() && prices[s.top()] > prices[i]) {
+      int top_idx = s.top();
+      s.pop();
 
-  while (!trucks.empty()) {
-    answer++;
-
-    total_weight -= bridge.front();
-    bridge.pop_front();
-
-    if (trucks.front() + total_weight <= weight) {
-      int new_truck = trucks.front();
-      trucks.pop_front();
-
-      bridge.push_back(new_truck);
-      total_weight += new_truck;
-    } else {
-      bridge.push_back(0);
+      answer[top_idx] = i - top_idx;
     }
+    s.push(i);
   }
 
-  return answer + bridge_length;
+  while (!s.empty()) {
+    int top_idx = s.top();
+    s.pop();
+
+    answer[top_idx] = (prices.size() - 1) - top_idx;
+  }
+  return answer;
 }
 
 int main() {
-  int bridge_length = 2;
-  int weight = 10;
-  vector<int> truck_weights = {7, 4, 5, 6};
-  int expected = 8;
-  int result = solution(bridge_length, weight, truck_weights);
-  if (result == expected) {
-    cout << "result: " << result << endl;
-  } else {
-    cout << "expected: " << expected << ", " << "result: " << result << endl;
-  }
-  bridge_length = 100;
-  weight = 100;
-  truck_weights = {10};
-  expected = 101;
-  result = solution(bridge_length, weight, truck_weights);
-  if (result == expected) {
-    cout << "result: " << result << endl;
-  } else {
-    cout << "expected: " << expected << ", " << "result: " << result << endl;
-  }
-  bridge_length = 100;
-  weight = 100;
-  truck_weights = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
-  expected = 110;
-  result = solution(bridge_length, weight, truck_weights);
+  vector<int> prices = {1, 2, 3, 2, 3};
+  vector<int> expected = {4, 3, 1, 1, 0};
+  vector<int> result = solution(prices);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
