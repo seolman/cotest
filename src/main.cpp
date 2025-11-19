@@ -1,5 +1,6 @@
+#include <functional>
 #include <iostream>
-#include <stack>
+#include <queue>
 #include <vector>
 
 using namespace std;
@@ -16,32 +17,34 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-vector<int> solution(vector<int> prices) {
-  vector<int> answer(prices.size());
-  stack<int> s;
-  for (int i = 0; i < prices.size(); i++) {
-    while (!s.empty() && prices[s.top()] > prices[i]) {
-      int top_idx = s.top();
-      s.pop();
+int solution(vector<int> scoville, int K) {
+  priority_queue<int, vector<int>, greater<int>> min_heap(scoville.begin(),
+                                                          scoville.end());
+  int answer = 0;
+  while (min_heap.size() >= 2 && min_heap.top() < K) {
+    answer++;
 
-      answer[top_idx] = i - top_idx;
-    }
-    s.push(i);
+    int first = min_heap.top();
+    min_heap.pop();
+    int second = min_heap.top();
+    min_heap.pop();
+
+    int mixed = first + second * 2;
+    min_heap.push(mixed);
   }
 
-  while (!s.empty()) {
-    int top_idx = s.top();
-    s.pop();
-
-    answer[top_idx] = (prices.size() - 1) - top_idx;
+  if (!min_heap.empty() && min_heap.top() >= K) {
+    return answer;
+  } else {
+    return -1;
   }
-  return answer;
 }
 
 int main() {
-  vector<int> prices = {1, 2, 3, 2, 3};
-  vector<int> expected = {4, 3, 1, 1, 0};
-  vector<int> result = solution(prices);
+  vector<int> scoville = {1, 2, 3, 9, 10, 12};
+  int k = 7;
+  int expected = 2;
+  int result = solution(scoville, k);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
