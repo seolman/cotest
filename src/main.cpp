@@ -1,6 +1,8 @@
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <queue>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -17,34 +19,42 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-int solution(vector<int> scoville, int K) {
-  priority_queue<int, vector<int>, greater<int>> min_heap(scoville.begin(),
-                                                          scoville.end());
+struct cmp {
+  bool operator()(pair<int, int> &a, pair<int, int> &b) {
+    return a.second > b.second;
+  }
+};
+
+int solution(vector<vector<int>> jobs) {
   int answer = 0;
-  while (min_heap.size() >= 2 && min_heap.top() < K) {
-    answer++;
+  sort(jobs.begin(), jobs.end());
 
-    int first = min_heap.top();
-    min_heap.pop();
-    int second = min_heap.top();
-    min_heap.pop();
+  priority_queue<pair<int, int>, vector<pair<int, int>>, cmp> pq;
+  int idx = 0;
+  int time = 0;
+  while (idx < jobs.size() || !pq.empty()) {
+    if (idx < jobs.size() && jobs[idx][0] <= time) {
+      pq.push({jobs[idx][0], jobs[idx][1]});
+      idx++;
+      continue;
+    }
 
-    int mixed = first + second * 2;
-    min_heap.push(mixed);
+    if (!pq.empty()) {
+      time += pq.top().second;
+      answer += time - pq.top().first;
+      pq.pop();
+    } else {
+      time = jobs[idx][0];
+    }
   }
 
-  if (!min_heap.empty() && min_heap.top() >= K) {
-    return answer;
-  } else {
-    return -1;
-  }
+  return answer / jobs.size();
 }
 
 int main() {
-  vector<int> scoville = {1, 2, 3, 9, 10, 12};
-  int k = 7;
-  int expected = 2;
-  int result = solution(scoville, k);
+  vector<vector<int>> jobs = {{0, 3}, {1, 9}, {3, 5}};
+  int expected = 8;
+  int result = solution(jobs);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
