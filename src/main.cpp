@@ -1,8 +1,9 @@
 #include <algorithm>
+#include <climits>
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
-#include <string>
-#include <unordered_set>
+#include <queue>
 #include <vector>
 
 using namespace std;
@@ -19,45 +20,60 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-bool is_prime(int num) {
-  if (num <= 1)
-    return false;
-  if (num == 2)
-    return true;
-  if (num % 2 == 0)
-    return false;
+int bfs(const vector<vector<int>> &graph, int start, int ignore1, int ignore2,
+        int n) {
+  int count = 1;
+  queue<int> q;
+  vector<int> visited(n + 1, false);
 
-  for (int i = 3; i <= sqrt(num); i++) {
-    if (num % i == 0) {
-      return false;
+  q.push(start);
+  visited[start] = true;
+
+  while (!q.empty()) {
+    int current_node = q.front();
+    q.pop();
+
+    for (int n : graph[current_node]) {
+      if ((current_node == ignore1 && n == ignore2) ||
+          (current_node == ignore2 && n == ignore1)) {
+        continue;
+      }
+
+      if (!visited[n]) {
+        count++;
+        visited[n] = true;
+        q.push(n);
+      }
     }
   }
-  return true;
+  return count;
 }
 
-int solution(string numbers) {
-  int answer = 0;
-  unordered_set<int> unique_numbers;
-  sort(numbers.begin(), numbers.end());
-  do {
-    for (int i = 1; i <= numbers.size(); i++) {
-      string s = numbers.substr(0, i);
-      unique_numbers.insert(stoi(s));
-    }
-  } while (next_permutation(numbers.begin(), numbers.end()));
+int solution(int n, vector<vector<int>> wires) {
+  int answer = INT_MAX;
+  vector<vector<int>> graph(n + 1);
+  for (const auto &w : wires) {
+    graph[w[0]].push_back(w[1]);
+    graph[w[1]].push_back(w[0]);
+  }
 
-  for (const int &n : unique_numbers) {
-    if (is_prime(n)) {
-      answer++;
-    }
+  for (const auto &w : wires) {
+    int v1 = w[0];
+    int v2 = w[1];
+
+    int count1 = bfs(graph, v1, v1, v2, n);
+    int count2 = n - count1;
+    answer = min(answer, abs(count1 - count2));
   }
   return answer;
 }
 
 int main() {
-  string numbers = "17";
+  int n = 9;
+  vector<vector<int>> wires = {{1, 3}, {2, 3}, {3, 4}, {4, 5},
+                               {4, 6}, {4, 7}, {7, 8}, {7, 9}};
   int expected = 3;
-  int result = solution(numbers);
+  int result = solution(n, wires);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
