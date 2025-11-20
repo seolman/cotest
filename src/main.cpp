@@ -1,8 +1,8 @@
+#include <algorithm>
+#include <cmath>
 #include <iostream>
-#include <iterator>
-#include <set>
-#include <sstream>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 using namespace std;
@@ -19,85 +19,45 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-class DoubleQueue {
-public:
-  void push(int value) { ms.insert(value); }
+bool is_prime(int num) {
+  if (num <= 1)
+    return false;
+  if (num == 2)
+    return true;
+  if (num % 2 == 0)
+    return false;
 
-  void pop_min() {
-    if (!ms.empty()) {
-      ms.erase(ms.begin());
+  for (int i = 3; i <= sqrt(num); i++) {
+    if (num % i == 0) {
+      return false;
     }
   }
-
-  void pop_max() {
-    if (!ms.empty()) {
-      ms.erase(prev(ms.end()));
-    }
-  }
-
-  int min() const {
-    if (!ms.empty()) {
-      return *ms.begin();
-    }
-    return 0;
-  }
-
-  int max() const {
-    if (!ms.empty()) {
-      return *ms.rbegin();
-    }
-    return 0;
-  }
-
-  bool empty() { return ms.empty(); }
-
-private:
-  multiset<int> ms;
-};
-
-vector<string> split(const string &input, const char &delimiter) {
-  vector<string> result;
-  stringstream ss(input);
-  string segment;
-
-  while (getline(ss, segment, delimiter)) {
-    result.push_back(segment);
-  }
-
-  return result;
+  return true;
 }
 
-vector<int> solution(vector<string> operations) {
-  DoubleQueue dpq;
-  for (const auto &o : operations) {
-    auto a = split(o, ' ');
-    string code = a[0];
-    int number = stoi(a[1]);
-    if (code == "I") {
-      dpq.push(number);
-    } else if (code == "D") {
-      if (dpq.empty()) {
-        continue;
-      }
+int solution(string numbers) {
+  int answer = 0;
+  unordered_set<int> unique_numbers;
+  sort(numbers.begin(), numbers.end());
+  do {
+    for (int i = 1; i <= numbers.size(); i++) {
+      string s = numbers.substr(0, i);
+      unique_numbers.insert(stoi(s));
+    }
+  } while (next_permutation(numbers.begin(), numbers.end()));
 
-      if (number == 1) {
-        dpq.pop_max();
-      } else {
-        dpq.pop_min();
-      }
+  for (const int &n : unique_numbers) {
+    if (is_prime(n)) {
+      answer++;
     }
   }
-  if (dpq.empty()) {
-    return {0, 0};
-  } else {
-    return {dpq.max(), dpq.min()};
-  }
+  return answer;
 }
 
 int main() {
-  vector<string> operations = {"I 16", "I -5643", "D -1", "D 1", "D 1", "I 123", "D -1"};
-  vector<int> expected = {0, 0};
-  vector<int> result = solution(operations);
+  string numbers = "17";
+  int expected = 3;
+  int result = solution(numbers);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
