@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -16,37 +17,40 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-void dfs(vector<string> &dictionary, char vowels[], string word) {
-  if (word.length() > 5) {
-    return;
-  }
-  if (!word.empty()) {
-    dictionary.push_back(word);
+int solution(string name) {
+  int answer = 0;
+  for (const auto &c : name) {
+    answer += min(c - (int)'A', (int)'Z' - c + 1);
   }
 
-  for (int i = 0; i < 5; i++) {
-    dfs(dictionary, vowels, word + vowels[i]);
-  }
-}
+  const int n = name.length();
+  int min_hor = n - 1;
+  for (int i = 0; i < n; i++) {
+    int next_idx = i + 1;
 
-int solution(string word) {
-  char vowels[] = {'A', 'E', 'I', 'O', 'U'};
-  vector<string> dictionary;
-
-  dfs(dictionary, vowels, "");
-
-  for (int i = 0; i < dictionary.size(); i++) {
-    if (word == dictionary[i]) {
-      return i + 1;
+    while (next_idx < n && name[next_idx] == 'A') {
+      next_idx++;
     }
+    int turnaround = i + (n - next_idx) + min(i, n - next_idx);
+    min_hor = min(min_hor, turnaround);
   }
-  return -1;
+
+  return answer + min_hor;
 }
 
 int main() {
-  string word = "AAAAE";
-  int expected = 6;
-  int result = solution(word);
+  string name = "JEROEN";
+  int expected = 56;
+  int result = solution(name);
+  if (result == expected) {
+    cout << "result: " << result << endl;
+  } else {
+    cout << "expected: " << expected << ", " << "result: " << result << endl;
+  }
+
+  name = "JAN";
+  expected = 23;
+  result = solution(name);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
