@@ -1,8 +1,5 @@
-#include <functional>
+#include <algorithm>
 #include <iostream>
-#include <queue>
-#include <string>
-#include <utility>
 #include <vector>
 
 using namespace std;
@@ -19,45 +16,17 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-int solution(int n, vector<vector<int>> costs) {
-  vector<vector<pair<int, int>>> graph(n);
-  for (const auto &c : costs) {
-    int from = c[0];
-    int to = c[1];
-    int w = c[2];
-    graph[from].push_back({w, to});
-    graph[to].push_back({w, from});
-  }
+bool cmp(const vector<int> &a, const vector<int> &b) { return a[1] < b[1]; }
 
-  priority_queue<pair<int, int>, vector<pair<int, int>>,
-                 greater<pair<int, int>>>
-      pq;
-  vector<bool> visited(n, false);
-  visited[0] = true;
-  for (const auto &edge : graph[0]) {
-    pq.push(edge);
-  }
+int solution(vector<vector<int>> routes) {
+  sort(routes.begin(), routes.end(), cmp);
+  int answer = 1;
+  int cam_pos = routes[0][1];
 
-  int answer = 0;
-  int connected_count = 1;
-
-  while (!pq.empty() && connected_count < n) {
-    int cost = pq.top().first;
-    int next_node = pq.top().second;
-    pq.pop();
-
-    if (visited[next_node]) {
-      continue;
-    }
-
-    visited[next_node] = true;
-    answer += cost;
-    connected_count++;
-
-    for (const auto &edge : graph[next_node]) {
-      if (!visited[edge.second]) {
-        pq.push(edge);
-      }
+  for (int i = 1; i < routes.size(); i++) {
+    if (routes[i][0] > cam_pos) {
+      answer++;
+      cam_pos = routes[i][1];
     }
   }
 
@@ -65,11 +34,9 @@ int solution(int n, vector<vector<int>> costs) {
 }
 
 int main() {
-  int n = 4;
-  vector<vector<int>> costs = {
-      {0, 1, 1}, {0, 2, 2}, {1, 2, 5}, {1, 3, 1}, {2, 3, 8}};
-  int expected = 4;
-  int result = solution(n, costs);
+  vector<vector<int>> routes = {{-20, -15}, {-14, -5}, {-18, -13}, {-5, -3}};
+  int expected = 2;
+  int result = solution(routes);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
