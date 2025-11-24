@@ -1,5 +1,5 @@
-#include <algorithm>
 #include <iostream>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -17,40 +17,25 @@ template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
   return os;
 }
 
-int solution(string name) {
-  int answer = 0;
-  for (const auto &c : name) {
-    answer += min(c - (int)'A', (int)'Z' - c + 1);
-  }
-
-  const int n = name.length();
-  int min_hor = n - 1;
-  for (int i = 0; i < n; i++) {
-    int next_idx = i + 1;
-
-    while (next_idx < n && name[next_idx] == 'A') {
-      next_idx++;
+string solution(string number, int k) {
+  string answer = "";
+  for (const auto &c : number) {
+    while (!answer.empty() && answer.back() < c && k > 0) {
+      answer.pop_back();
+      k--;
     }
-    int turnaround = i + (n - next_idx) + min(i, n - next_idx);
-    min_hor = min(min_hor, turnaround);
+    answer.push_back(c);
   }
 
-  return answer + min_hor;
+  answer.erase(answer.length() - k, k);
+  return answer;
 }
 
 int main() {
-  string name = "JEROEN";
-  int expected = 56;
-  int result = solution(name);
-  if (result == expected) {
-    cout << "result: " << result << endl;
-  } else {
-    cout << "expected: " << expected << ", " << "result: " << result << endl;
-  }
-
-  name = "JAN";
-  expected = 23;
-  result = solution(name);
+  string number = "1924";
+  int k = 2;
+  string expected = "94";
+  string result = solution(number, k);
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
