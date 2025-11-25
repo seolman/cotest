@@ -4,43 +4,60 @@
 
 using namespace std;
 
-template <typename T> ostream &operator<<(ostream &os, const vector<T> &vec) {
-  os << "{ ";
-  for (size_t i = 0; i < vec.size(); i++) {
-    os << vec[i];
-    if (i != vec.size() - 1) {
-      os << ", ";
+long long solution(int n, vector<int> times) {
+  sort(times.begin(), times.end());
+  long long low = 1;
+  long long high = (long long)n * times.back();
+  long long answer = high;
+
+  while (low <= high) {
+    long long mid = low + (high - low) / 2;
+    long long processed = 0;
+
+    for (const auto &time : times) {
+      processed += mid / time;
+
+      if (processed >= n) {
+        break;
+      }
+    }
+
+    if (processed >= n) {
+      answer = mid;
+      high = mid - 1;
+    } else {
+      low = mid + 1;
     }
   }
-  os << " }";
-  return os;
-}
-
-bool cmp(const vector<int> &a, const vector<int> &b) { return a[1] < b[1]; }
-
-int solution(vector<vector<int>> routes) {
-  sort(routes.begin(), routes.end(), cmp);
-  int answer = 1;
-  int cam_pos = routes[0][1];
-
-  for (int i = 1; i < routes.size(); i++) {
-    if (routes[i][0] > cam_pos) {
-      answer++;
-      cam_pos = routes[i][1];
-    }
-  }
-
   return answer;
 }
 
+template <typename T> ostream &operator<<(ostream &os, vector<T> &vec) {
+  os << "{";
+  for (auto it = vec.begin(); it != vec.end(); it++) {
+    os << *it;
+    if (it != vec.end() - 1) {
+      os << ", ";
+    }
+  }
+  os << "}";
+  return os;
+}
+
 int main() {
-  vector<vector<int>> routes = {{-20, -15}, {-14, -5}, {-18, -13}, {-5, -3}};
-  int expected = 2;
-  int result = solution(routes);
+  cout << "TESTING" << endl;
+
+  int n = 6;
+  vector<int> times = {7, 10};
+  int expected = 28;
+  int result = solution(n, times);
+
   if (result == expected) {
     cout << "result: " << result << endl;
   } else {
-    cout << "expected: " << expected << ", " << "result: " << result << endl;
+    cout << "FAILED" << endl;
+    cout << "expected: " << expected << endl;
+    cout << "result: " << result << endl;
   }
   return 0;
 }
