@@ -4,29 +4,34 @@
 
 using namespace std;
 
-long long solution(int n, vector<int> times) {
-  sort(times.begin(), times.end());
-  long long low = 1;
-  long long high = (long long)n * times.back();
-  long long answer = high;
+int solution(int distance, vector<int> rocks, int n) {
+  sort(rocks.begin(), rocks.end());
+  int low = 1;
+  int high = distance;
+  int answer = 0;
 
   while (low <= high) {
-    long long mid = low + (high - low) / 2;
-    long long processed = 0;
+    int mid = low + (high - low) / 2;
+    int removed = 0;
+    int pos = 0;
 
-    for (const auto &time : times) {
-      processed += mid / time;
-
-      if (processed >= n) {
-        break;
+    for (const auto &rock : rocks) {
+      if (rock - pos < mid) {
+        removed++;
+      } else {
+        pos = rock;
       }
     }
 
-    if (processed >= n) {
+    if (distance - pos < mid) {
+      removed++;
+    }
+
+    if (removed <= n) {
       answer = mid;
-      high = mid - 1;
-    } else {
       low = mid + 1;
+    } else {
+      high = mid - 1;
     }
   }
   return answer;
@@ -47,10 +52,11 @@ template <typename T> ostream &operator<<(ostream &os, vector<T> &vec) {
 int main() {
   cout << "TESTING" << endl;
 
-  int n = 6;
-  vector<int> times = {7, 10};
-  int expected = 28;
-  int result = solution(n, times);
+  int distance = 25;
+  vector<int> rocks = {2, 14, 11, 21, 17};
+  int n = 2;
+  int expected = 4;
+  int result = solution(distance, rocks, n);
 
   if (result == expected) {
     cout << "result: " << result << endl;
