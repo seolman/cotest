@@ -1,6 +1,5 @@
-#include <algorithm>
 #include <iostream>
-#include <queue>
+#include <map>
 #include <vector>
 
 using namespace std;
@@ -17,35 +16,39 @@ template <typename T> ostream &operator<<(ostream &os, vector<T> &vec) {
   return os;
 }
 
-int solution(int n, vector<vector<int>> results) {
-  int answer = 0;
-  vector<vector<bool>> graph(n + 1, vector<bool>(n + 1, false));
-
-  for (const auto &result : results) {
-    int a = result[0];
-    int b = result[1];
-    graph[a][b] = true;
+pair<pair<int, int>, pair<int, int>> make_edge(pair<int, int> prev,
+                                               pair<int, int> next) {
+  if (prev > next) {
+    swap(prev, next);
   }
+  return {prev, next};
+}
 
-  for (int k = 1; k < n + 1; k++) {
-    for (int i = 1; i < n + 1; i++) {
-      for (int j = 1; j < n + 1; j++) {
-        if (graph[i][k] && graph[k][j]) {
-          graph[i][j] = true;
+int solution(vector<int> arrows) {
+  int answer = 0;
+  int dx[] = {0, 1, 1, 1, 0, -1, -1, -1};
+  int dy[] = {1, 1, 0, -1, -1, -1, 0, 1};
+
+  map<pair<int, int>, bool> visited_nodes;
+  map<pair<pair<int, int>, pair<int, int>>, bool> visited_edges;
+
+  pair<int, int> current_pos = {0, 0};
+  visited_nodes[current_pos] = true;
+
+  for (const auto &dir : arrows) {
+    for (int i = 0; i < 2; i++) {
+      pair<int, int> prev_pos = current_pos;
+      current_pos.first += dx[dir];
+      current_pos.second += dy[dir];
+
+      if (visited_nodes[current_pos]) {
+        if (!visited_edges[make_edge(prev_pos, current_pos)]) {
+          answer++;
         }
       }
-    }
-  }
 
-  for (int i = 1; i < n + 1; i++) {
-    int count = 0;
-    for (int j = 1; j < n + 1; j++) {
-      if (graph[i][j] || graph[j][i]) {
-        count++;
-      }
-    }
-    if (count == n - 1) {
-      answer++;
+      visited_nodes[current_pos] = true;
+      visited_edges[make_edge(prev_pos, current_pos)] = true;
     }
   }
 
@@ -55,10 +58,10 @@ int solution(int n, vector<vector<int>> results) {
 int main() {
   cout << "TESTING" << endl;
 
-  int n = 5;
-  vector<vector<int>> results = {{4, 3}, {4, 2}, {3, 2}, {1, 2}, {2, 5}};
-  int expected = 2;
-  int result = solution(n, results);
+  vector<int> arrows = {6, 6, 6, 4, 4, 4, 2, 2, 2, 0,
+                        0, 0, 1, 6, 5, 5, 3, 6, 0};
+  int expected = 3;
+  int result = solution(arrows);
 
   if (result == expected) {
     cout << "result: " << result << endl;
