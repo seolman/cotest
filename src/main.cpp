@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <unordered_set>
 #include <vector>
 
 using namespace std;
@@ -16,52 +17,50 @@ template <typename T> ostream &operator<<(ostream &os, vector<T> &vec) {
   return os;
 }
 
-pair<pair<int, int>, pair<int, int>> make_edge(pair<int, int> prev,
-                                               pair<int, int> next) {
-  if (prev > next) {
-    swap(prev, next);
+int solution(int N, int number) {
+  if (N == number) {
+    return 1;
   }
-  return {prev, next};
-}
 
-int solution(vector<int> arrows) {
-  int answer = 0;
-  int dx[] = {0, 1, 1, 1, 0, -1, -1, -1};
-  int dy[] = {1, 1, 0, -1, -1, -1, 0, 1};
+  vector<unordered_set<int>> dp(9);
 
-  map<pair<int, int>, bool> visited_nodes;
-  map<pair<pair<int, int>, pair<int, int>>, bool> visited_edges;
+  int concat_n = 0;
+  for (int i = 1; i < 9; i++) {
+    concat_n = concat_n * 10 + N;
+    dp[i].insert(concat_n);
+  }
 
-  pair<int, int> current_pos = {0, 0};
-  visited_nodes[current_pos] = true;
+  for (int k = 2; k < 9; k++) {
+    for (int i = 1; i < k; i++) {
+      int j = k - i;
 
-  for (const auto &dir : arrows) {
-    for (int i = 0; i < 2; i++) {
-      pair<int, int> prev_pos = current_pos;
-      current_pos.first += dx[dir];
-      current_pos.second += dy[dir];
-
-      if (visited_nodes[current_pos]) {
-        if (!visited_edges[make_edge(prev_pos, current_pos)]) {
-          answer++;
+      for (const int num1 : dp[i]) {
+        for (const int num2 : dp[j]) {
+          dp[k].insert(num1 + num2);
+          dp[k].insert(num1 - num2);
+          dp[k].insert(num1 * num2);
+          if (num2 != 0) {
+            dp[k].insert(num1 / num2);
+          }
         }
       }
+    }
 
-      visited_nodes[current_pos] = true;
-      visited_edges[make_edge(prev_pos, current_pos)] = true;
+    if (dp[k].count(number)) {
+      return k;
     }
   }
 
-  return answer;
+  return -1;
 }
 
 int main() {
   cout << "TESTING" << endl;
 
-  vector<int> arrows = {6, 6, 6, 4, 4, 4, 2, 2, 2, 0,
-                        0, 0, 1, 6, 5, 5, 3, 6, 0};
-  int expected = 3;
-  int result = solution(arrows);
+  int n = 5;
+  int number = 12;
+  int expected = 4;
+  int result = solution(n, number);
 
   if (result == expected) {
     cout << "result: " << result << endl;
