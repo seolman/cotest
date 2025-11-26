@@ -17,49 +17,48 @@ template <typename T> ostream &operator<<(ostream &os, vector<T> &vec) {
   return os;
 }
 
-int solution(int n, vector<vector<int>> edge) {
+int solution(int n, vector<vector<int>> results) {
   int answer = 0;
-  vector<vector<int>> adj(n + 1);
-  vector<int> distance(n + 1, -1);
+  vector<vector<bool>> graph(n + 1, vector<bool>(n + 1, false));
 
-  for (const auto &e : edge) {
-    adj[e[0]].push_back(e[1]);
-    adj[e[1]].push_back(e[0]);
+  for (const auto &result : results) {
+    int a = result[0];
+    int b = result[1];
+    graph[a][b] = true;
   }
 
-  queue<int> q;
-  distance[1] = 0;
-  q.push(1);
-
-  while (!q.empty()) {
-    int current = q.front();
-    q.pop();
-
-    for (const int &next : adj[current]) {
-      if (distance[next] == -1) {
-        q.push(next);
-        distance[next] = distance[current] + 1;
+  for (int k = 1; k < n + 1; k++) {
+    for (int i = 1; i < n + 1; i++) {
+      for (int j = 1; j < n + 1; j++) {
+        if (graph[i][k] && graph[k][j]) {
+          graph[i][j] = true;
+        }
       }
     }
   }
 
-  int max = *max_element(distance.begin() + 1, distance.end());
-  for (const auto &d : distance) {
-    if (max == d) {
+  for (int i = 1; i < n + 1; i++) {
+    int count = 0;
+    for (int j = 1; j < n + 1; j++) {
+      if (graph[i][j] || graph[j][i]) {
+        count++;
+      }
+    }
+    if (count == n - 1) {
       answer++;
     }
   }
+
   return answer;
 }
 
 int main() {
   cout << "TESTING" << endl;
 
-  int n = 6;
-  vector<vector<int>> edge = {{3, 6}, {4, 3}, {3, 2}, {1, 3},
-                              {1, 2}, {2, 4}, {5, 2}};
-  int expected = 3;
-  int result = solution(n, edge);
+  int n = 5;
+  vector<vector<int>> results = {{4, 3}, {4, 2}, {3, 2}, {1, 2}, {2, 5}};
+  int expected = 2;
+  int result = solution(n, results);
 
   if (result == expected) {
     cout << "result: " << result << endl;
