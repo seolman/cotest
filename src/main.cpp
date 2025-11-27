@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -15,42 +16,32 @@ template <typename T> ostream &operator<<(ostream &os, vector<T> &vec) {
   return os;
 }
 
-int solution(int m, int n, vector<vector<int>> puddles) {
-  int mod = 1000000007;
-
-  vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
-  for (const auto &puddle : puddles) {
-    dp[puddle[1]][puddle[0]] = -1;
+int rob(vector<int> &money) {
+  int prev1 = 0;
+  int prev2 = 0;
+  for (const int &m : money) {
+    int current_max = max(prev1, m + prev2);
+    prev2 = prev1;
+    prev1 = current_max;
   }
 
-  dp[1][1] = 1;
+  return prev1;
+}
 
-  for (int i = 1; i < n + 1; i++) {
-    for (int j = 1; j < m + 1; j++) {
-      if (dp[i][j] == -1) {
-        dp[i][j] = 0;
-        continue;
-      }
-
-      if (i > 1) {
-        dp[i][j] = (dp[i][j] + dp[i - 1][j]) % mod;
-      }
-      if (j > 1) {
-        dp[i][j] = (dp[i][j] + dp[i][j - 1]) % mod;
-      }
-    }
-  }
-  return dp[n][m];
+int solution(vector<int> money) {
+  vector<int> case1(money.begin(), money.end() - 1);
+  int max1 = rob(case1);
+  vector<int> case2(money.begin() + 1, money.end());
+  int max2 = rob(case2);
+  return max(max1, max2);
 }
 
 int main() {
   cout << "TESTING" << endl;
 
-  int m = 4;
-  int n = 3;
-  vector<vector<int>> puddles = {{2, 2}};
+  vector<int> money = {1, 2, 3, 1};
   int expected = 4;
-  int result = solution(m, n, puddles);
+  int result = solution(money);
 
   if (result == expected) {
     cout << "result: " << result << endl;
