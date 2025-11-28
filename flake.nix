@@ -22,6 +22,7 @@
           nodejs_latest
           go
           lua
+          clang-tools
         ];
       };
     };
