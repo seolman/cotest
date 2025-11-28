@@ -3,25 +3,22 @@
 
 using namespace std;
 
-int solution(vector<int> wallet, vector<int> bill) {
+int solution(vector<vector<string>> board, int h, int w) {
   int answer = 0;
-  int w_max = max(wallet[0], wallet[1]);
-  int w_min = min(wallet[0], wallet[1]);
-  while (true) {
-    int bill_w = bill[0];
-    int bill_h = bill[1];
+  int dy[] = {-1, 0, 0, 1};
+  int dx[] = {0, 1, -1, 0};
+  for (int i = 0; i < 4; i++) {
+    int next_y = h + dy[i];
+    int next_x = w + dx[i];
 
-    if ((bill_w <= w_max && bill_h <= w_min) ||
-        (bill_h <= w_max && bill_w <= w_min)) {
-      break;
+    if (next_y < 0 || next_y > board.size() - 1 || next_x < 0 ||
+        next_x > board[0].size() - 1) {
+      continue;
     }
 
-    if (bill_w >= bill_h) {
-      bill[0] /= 2;
-    } else {
-      bill[1] /= 2;
+    if (board[next_y][next_x] == board[h][w]) {
+      answer++;
     }
-    answer++;
   }
   return answer;
 }
@@ -41,10 +38,14 @@ template <typename T> ostream &operator<<(ostream &os, vector<T> &vec) {
 int main() {
   cout << "TESTING" << endl;
 
-  vector<int> wallet = {30, 15};
-  vector<int> bill = {26, 17};
-  int expected = 1;
-  int result = solution(wallet, bill);
+  vector<vector<string>> board = {{"blue", "red", "orange", "red"},
+                                  {"red", "red", "blue", "orange"},
+                                  {"blue", "orange", "red", "red"},
+                                  {"orange", "orange", "red", "blue"}};
+  int h = 1;
+  int w = 1;
+  int expected = 2;
+  int result = solution(board, h, w);
 
   if (result == expected) {
     cout << "result: " << result << endl;
