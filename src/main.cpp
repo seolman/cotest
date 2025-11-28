@@ -1,27 +1,9 @@
+#include <algorithm>
 #include <iostream>
+#include <unordered_map>
 #include <vector>
 
 using namespace std;
-
-int solution(vector<vector<string>> board, int h, int w) {
-  int answer = 0;
-  int dy[] = {-1, 0, 0, 1};
-  int dx[] = {0, 1, -1, 0};
-  for (int i = 0; i < 4; i++) {
-    int next_y = h + dy[i];
-    int next_x = w + dx[i];
-
-    if (next_y < 0 || next_y > board.size() - 1 || next_x < 0 ||
-        next_x > board[0].size() - 1) {
-      continue;
-    }
-
-    if (board[next_y][next_x] == board[h][w]) {
-      answer++;
-    }
-  }
-  return answer;
-}
 
 template <typename T> ostream &operator<<(ostream &os, vector<T> &vec) {
   os << "{";
@@ -35,17 +17,42 @@ template <typename T> ostream &operator<<(ostream &os, vector<T> &vec) {
   return os;
 }
 
+vector<vector<int>> solution(vector<vector<int>> data, string ext, int val_ext,
+                             string sort_by) {
+  vector<vector<int>> answer;
+
+  unordered_map<string, int> m;
+  m.insert({"code", 0});
+  m.insert({"date", 1});
+  m.insert({"maximum", 2});
+  m.insert({"remain", 3});
+
+  for (const auto &d : data) {
+    int idx = m[ext];
+    if (d[idx] < val_ext) {
+      answer.push_back(d);
+    }
+  }
+
+  int idx = m[sort_by];
+  sort(answer.begin(), answer.end(),
+       [&](const vector<int> &a, const vector<int> &b) {
+         return a[idx] < b[idx];
+       });
+
+  return answer;
+}
+
 int main() {
   cout << "TESTING" << endl;
 
-  vector<vector<string>> board = {{"blue", "red", "orange", "red"},
-                                  {"red", "red", "blue", "orange"},
-                                  {"blue", "orange", "red", "red"},
-                                  {"orange", "orange", "red", "blue"}};
-  int h = 1;
-  int w = 1;
-  int expected = 2;
-  int result = solution(board, h, w);
+  vector<vector<int>> data = {
+      {1, 20300104, 100, 80}, {2, 20300804, 847, 37}, {3, 20300401, 10, 8}};
+  string ext = "date";
+  int val_ext = 20300501;
+  string sort_by = "remain";
+  vector<vector<int>> expected = {{3, 20300401, 10, 8}, {1, 20300104, 100, 80}};
+  vector<vector<int>> result = solution(data, ext, val_ext, sort_by);
 
   if (result == expected) {
     cout << "result: " << result << endl;
